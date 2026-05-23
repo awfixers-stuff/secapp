@@ -1,7 +1,6 @@
-import { Markdown } from "fumadocs-core/content/md";
+import { RenderMarkdown } from "@/components/render-markdown";
 import { getInfoContent } from "@/lib/content";
 import { ContentPage } from "@/components/content-page";
-import { mdxComponents } from "@/components/mdx-components";
 
 const slug = "roadmap";
 
@@ -22,7 +21,7 @@ export default async function RoadmapPage() {
       description={entry.description}
       lastUpdated={entry.data.lastUpdated as string | undefined}
     >
-      <Markdown components={mdxComponents}>{entry.content}</Markdown>
+      <RenderMarkdown content={entry.content} />
     </ContentPage>
   );
 }

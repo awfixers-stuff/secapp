@@ -1,8 +1,7 @@
-import { Markdown } from "fumadocs-core/content/md";
+import { RenderMarkdown } from "@/components/render-markdown";
 import { getDocsContent, getDocsSlugs } from "@/lib/content";
 import { notFound } from "next/navigation";
 import { ContentPage } from "@/components/content-page";
-import { mdxComponents } from "@/components/mdx-components";
 
 export default async function DocsPage({
   params,
@@ -24,7 +23,7 @@ export default async function DocsPage({
       description={entry.description}
       lastUpdated={entry.data.lastUpdated as string | undefined}
     >
-      <Markdown components={mdxComponents}>{entry.content}</Markdown>
+      <RenderMarkdown content={entry.content} />
     </ContentPage>
   );
 }

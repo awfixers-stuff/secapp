@@ -1,6 +1,9 @@
+import { Markdown } from "fumadocs-core/content/md";
+import { remarkGfm } from "fumadocs-core/mdx-plugins/remark-gfm";
 import type { Components } from "hast-util-to-jsx-runtime";
+import type { Compatible } from "vfile";
 
-export const mdxComponents: Components = {
+const mdxComponents: Components = {
   h1: ({ children, ...props }) => (
     <h1 className="text-3xl font-bold tracking-tight mt-10 mb-4 first:mt-0" {...props}>
       {children}
@@ -92,9 +95,51 @@ export const mdxComponents: Components = {
       {children}
     </td>
   ),
+  tr: ({ children, ...props }) => (
+    <tr className="border-b" {...props}>
+      {children}
+    </tr>
+  ),
   strong: ({ children, ...props }) => (
     <strong className="font-semibold" {...props}>
       {children}
     </strong>
   ),
+  em: ({ children, ...props }) => (
+    <em className="italic" {...props}>
+      {children}
+    </em>
+  ),
+  del: ({ children, ...props }) => (
+    <del className="line-through" {...props}>
+      {children}
+    </del>
+  ),
+  input: (props) => {
+    // Checkbox support for GFM task lists
+    if (props.type === "checkbox") {
+      return (
+        <input
+          className="mr-1.5 h-4 w-4 rounded border-border"
+          disabled
+          {...props}
+        />
+      );
+    }
+    return <input {...props} />;
+  },
 };
+
+/**
+ * Render markdown content with GFM support and consistent styling.
+ *
+ * Use this instead of the raw `Markdown` component to ensure
+ * tables, strikethrough, task lists, and other GFM features render correctly.
+ */
+export function RenderMarkdown({ content }: { content: string }) {
+  return (
+    <Markdown remarkPlugins={[remarkGfm]} components={mdxComponents}>
+      {content}
+    </Markdown>
+  );
+}
