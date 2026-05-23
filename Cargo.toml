@@ -1,0 +1,59 @@
+[package]
+name = "secapp"
+version = "0.1.0"
+edition = "2024"
+description = "Linux system keystore protecting sensitive directories against ransomware"
+
+[dependencies]
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+
+# CLI
+clap = { version = "4", features = ["derive"] }
+
+# Database
+libsql = "0.9"
+
+# Crypto
+aes-gcm = "0.10"
+argon2 = "0.5"
+rand = "0.8"
+sha2 = "0.10"
+hkdf = "0.12"
+
+# File monitoring
+notify = "8"
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Error handling
+thiserror = "2"
+anyhow = "1"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Hex encoding
+hex = "0.4"
+
+# TUI
+ratatui = "0.29"
+crossterm = "0.28"
+
+# Directories
+dirs = "6"
+
+# Kernel keyring
+keyutils = "0.4"
+
+# System libc (for PID checks)
+libc = "0.2"
+
+# Scope guard for cleanup
+scopeguard = "1"
+
+[dev-dependencies]
+tempfile = "3"
