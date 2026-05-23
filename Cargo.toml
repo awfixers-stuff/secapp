@@ -19,7 +19,7 @@ aes-gcm = "0.10"
 argon2 = "0.5"
 rand = "0.8"
 sha2 = "0.10"
-hkdf = "0.12"
+hkdf = "0.13"
 
 # File monitoring
 notify = "8"
@@ -41,7 +41,7 @@ hex = "0.4"
 
 # TUI
 ratatui = "0.29"
-crossterm = "0.28"
+crossterm = "0.29"
 
 # Directories
 dirs = "6"
