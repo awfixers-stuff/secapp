@@ -1,0 +1,32 @@
+---
+title: Documentation
+description: secapp documentation — setup, configuration, and usage guides.
+---
+
+# Documentation
+
+Welcome to the secapp documentation. secapp is a Linux system keystore that protects your sensitive directories against ransomware and unauthorized access.
+
+## Quick Links
+
+- **[Getting Started](/docs/getting-started)** — Build, install, and initialize secapp
+- **[Architecture](/docs/architecture)** — Crypto, database, and daemon internals
+- **[CLI Reference](/docs/cli)** — Full command-line reference
+- **[Configuration](/docs/configuration)** — Config file format and options
+
+## What secapp does
+
+1. **Monitors** your protected directories (`~/.config/`, `~/.local/`, `~/.ssh/`, `~/.gnupg/`) for file changes
+2. **Encrypts** files at rest using per-file AES-256-GCM keys wrapped under a master key
+3. **Controls access** through policy rules (allow/deny/log) matching on path globs and process names
+4. **Audits** every encryption, decryption, and policy decision in a local database
+
+## What secapp does not do
+
+- secapp is **not** a password manager
+- secapp does **not** protect against root-level attackers or a compromised kernel
+- secapp does **not** provide key recovery in v1
+
+---
+
+More documentation pages coming soon. Check the [Roadmap](/info/roadmap) for planned features.

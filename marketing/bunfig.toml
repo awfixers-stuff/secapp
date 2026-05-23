@@ -1,0 +1,26 @@
+[install]
+
+optional = false
+
+dev = true
+
+peer = false
+
+production = false
+
+frozenLockfile = false
+
+dryRun = false
+
+concurrentScripts = 8 # (cpu count or GOMAXPROCS) x2
+
+minimumReleaseAge = 604800
+
+minimumReleaseAgeExcludes = [
+  "@types/node",
+  "typescript",
+  "@typescript/native-preview",
+  "@types/bun",
+  "shadcn",
+  "postcss",
+]

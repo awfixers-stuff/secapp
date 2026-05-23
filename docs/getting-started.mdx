@@ -1,0 +1,84 @@
+---
+title: Getting Started
+description: Build, install, and initialize secapp on Linux.
+---
+
+# Getting Started
+
+## Prerequisites
+
+- **Rust 2024 edition** (1.85+)
+- **C compiler** (for libsql native build)
+- **Linux** (kernel keyring and inotify support required)
+
+## Build
+
+```bash
+cargo build --release
+```
+
+The `secapp` binary will be at `target/release/secapp`.
+
+## Initialize
+
+```bash
+secapp init
+```
+
+Creates `~/.secapp/config.json` with default protected directories and Argon2id parameters.
+
+Default protected directories:
+- `~/.config`
+- `~/.local`
+- `~/.ssh`
+- `~/.gnupg`
+
+## Start the Daemon
+
+With TUI interface:
+
+```bash
+secapp start
+```
+
+Headless mode:
+
+```bash
+secapp daemon
+```
+
+Enter your master password when prompted. The daemon begins watching protected directories.
+
+## Add a Custom Protected Directory
+
+```bash
+secapp add-path ~/projects/secrets
+```
+
+## Configure Access Policies
+
+Allow `ssh` to access all `.ssh` files:
+
+```bash
+secapp policy add "~/.ssh/*" "ssh" allow --priority 10
+```
+
+Deny all other processes from `.ssh`:
+
+```bash
+secapp policy add "~/.ssh/*" "*" deny --priority 0
+```
+
+## Lock the Keystore
+
+```bash
+secapp lock
+```
+
+Evicts the master key from memory and the kernel keyring. Encrypted files remain encrypted until you unlock again.
+
+## Next Steps
+
+- [Architecture](/docs/architecture) — understand how secapp works internally
+- [CLI Reference](/docs/cli) — full command documentation
+- [Configuration](/docs/configuration) — config file format

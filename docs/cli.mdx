@@ -1,0 +1,132 @@
+---
+title: CLI Reference
+description: Full command-line reference for secapp.
+---
+
+# CLI Reference
+
+## Global Syntax
+
+```bash
+secapp <COMMAND>
+```
+
+## Commands
+
+### `start`
+
+Start the daemon with the TUI interface.
+
+```bash
+secapp start
+```
+
+Prompts for the master password. The daemon begins watching protected directories and the TUI opens.
+
+### `daemon`
+
+Start the daemon in background mode (no TUI).
+
+```bash
+secapp daemon
+```
+
+Same as `start` but without the terminal UI. Useful for headless servers or scripts.
+
+### `init`
+
+Initialize secapp configuration.
+
+```bash
+secapp init
+```
+
+Creates `~/.secapp/config.json` with default protected directories and Argon2id parameters. Also initializes the database.
+
+### `lock`
+
+Lock the keystore.
+
+```bash
+secapp lock
+```
+
+Evicts the master key from memory and the kernel keyring. Encrypted files remain encrypted at rest until you unlock again.
+
+### `list`
+
+List protected directories and their status.
+
+```bash
+secapp list
+```
+
+### `logs`
+
+Show access logs.
+
+```bash
+secapp logs [--limit N]
+```
+
+Default: 50 entries.
+
+### `encrypt`
+
+Encrypt a specific file.
+
+```bash
+secapp encrypt <PATH>
+```
+
+### `decrypt`
+
+Decrypt a specific file.
+
+```bash
+secapp decrypt <PATH>
+```
+
+### `add-path`
+
+Add a directory to the protected list.
+
+```bash
+secapp add-path <PATH>
+```
+
+### `remove-path`
+
+Remove a directory from the protected list.
+
+```bash
+secapp remove-path <PATH>
+```
+
+### `policy`
+
+Manage access policies.
+
+```bash
+# Add a policy
+secapp policy add <PATH_GLOB> <PROCESS_PATTERN> <allow|deny|log> [--priority N]
+
+# Remove a policy
+secapp policy remove <ID>
+
+# List policies
+secapp policy list
+```
+
+#### Examples
+
+```bash
+# Allow ssh to access all .ssh files
+secapp policy add "~/.ssh/*" "ssh" allow --priority 10
+
+# Deny all other processes from .ssh
+secapp policy add "~/.ssh/*" "*" deny --priority 0
+
+# Log all access to .gnupg
+secapp policy add "~/.gnupg/*" "*" log --priority 5
+```

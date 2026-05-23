@@ -1,0 +1,78 @@
+---
+title: Configuration
+description: secapp configuration file format and options.
+---
+
+# Configuration
+
+secapp stores its configuration at `~/.secapp/config.json`, created by `secapp init`.
+
+## Default Configuration
+
+```json
+{
+  "protected_paths": [
+    "/home/user/.config",
+    "/home/user/.local",
+    "/home/user/.ssh",
+    "/home/user/.gnupg"
+  ],
+  "encryption": {
+    "memory_cost": 19456,
+    "time_cost": 2,
+    "parallelism": 1,
+    "algorithm": "aes-256-gcm"
+  },
+  "daemon": {
+    "poll_interval_ms": 1000,
+    "autostart": false,
+    "pid_file": "/home/user/.secapp/secapp.pid",
+    "log_level": "info"
+  }
+}
+```
+
+## Protected Paths
+
+The `protected_paths` array lists directories that secapp monitors for file changes. When a file is created or modified in any of these directories (recursively), secapp:
+
+1. Generates a per-file AES-256-GCM key
+2. Encrypts the file
+3. Replaces the plaintext with the encrypted blob
+4. Stores the wrapped key and metadata in the database
+
+### Adding and Removing Paths
+
+```bash
+secapp add-path ~/projects/secrets
+secapp remove-path ~/projects/secrets
+```
+
+## Encryption Settings
+
+| Field | Default | Description |
+|---|---|---|
+| `memory_cost` | 19456 | Argon2id memory cost in KiB (OWASP recommended) |
+| `time_cost` | 2 | Argon2id iterations |
+| `parallelism` | 1 | Argon2id parallelism |
+| `algorithm` | `aes-256-gcm` | Encryption algorithm (currently only AES-256-GCM) |
+
+**Do not change these unless you know what you're doing.** The defaults follow OWASP recommendations for key derivation. Changing them affects the security of your encrypted data.
+
+## Daemon Settings
+
+| Field | Default | Description |
+|---|---|---|
+| `poll_interval_ms` | 1000 | How often the daemon polls for file changes |
+| `autostart` | false | Whether to start the daemon automatically |
+| `pid_file` | `~/.secapp/secapp.pid` | PID file location |
+| `log_level` | `info` | Log level (`trace`, `debug`, `info`, `warn`, `error`) |
+
+## Database
+
+secapp uses libsql (stored at `~/.secapp/secapp.db`) for all local state. The database tracks:
+
+- **Protected files** — path, encrypted key, nonce, sizes, status, timestamps
+- **Access logs** — file path, process info, action, allowed/denied
+- **Policies** — path pattern, process pattern, action, priority
+- **Key metadata** — salts and wrapping nonces

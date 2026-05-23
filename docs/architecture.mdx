@@ -1,0 +1,55 @@
+---
+title: Architecture
+description: secapp internal architecture — crypto, database, daemon, and interception.
+---
+
+# Architecture
+
+secapp is composed of 5 components. The v1 MVP implements the daemon, TUI, and CLI in a single Cargo workspace.
+
+## Components
+
+| Component | Binary | Status | Description |
+|---|---|---|---|
+| System Daemon | `secapp daemon` | v1 | Privileged process — monitors filesystem, manages encryption |
+| TUI | `secapp start` | v1 | ratatui terminal interface for status, logs, policies, directories |
+| CLI | `secapp <subcommand>` | v1 | clap-based CLI for scripted and headless operation |
+| GUI | `secapp-gui` | Planned | gtk-rs native app with dual authentication |
+| System Tray | `secapp-tray` | Planned | GNOME/KDE tray icon with lock/unlock and status |
+
+## Crypto
+
+- **Key derivation**: Argon2id (OWASP-recommended: 19456 KiB memory, 2 iterations, parallelism 1)
+- **File encryption**: AES-256-GCM with per-file random keys
+- **Key wrapping**: Per-file keys encrypted under a subkey derived from the master key via HKDF-SHA256. The master key is never used directly.
+- **Integrity**: SHA-256 hashes of original plaintext stored alongside encrypted files
+- **Key storage**: Master key cached in Linux kernel session keyring (`keyutils`)
+
+## Database
+
+secapp uses libsql (Turso's open-source SQLite fork) stored at `~/.secapp/secapp.db`.
+
+Schema tables:
+- **Protected files** — path, encrypted key, nonce, sizes, encryption status, timestamps
+- **Access logs** — file path, process PID/name/cmdline, action, allowed/denied, timestamp
+- **Policies** — path pattern, process pattern, action, priority
+- **Key metadata** — salts and key-wrapping nonces for master key rotation
+
+## Daemon Lifecycle
+
+1. **`init`** — generates config, creates database, derives master key from password
+2. **`start`/`daemon`** — loads config, unlocks keystore (password → Argon2id → master key → kernel keyring), starts inotify watcher
+3. **Runtime** — monitors file events, encrypts new/modified files in protected directories, enforces policies
+4. **`lock`** — purges master key from memory and kernel keyring
+
+## File Interceptor
+
+The inotify-based interceptor:
+1. Watches all configured protected directories recursively
+2. On file creation or modification, derives a per-file key
+3. Encrypts the file with AES-256-GCM
+4. Replaces the plaintext with the encrypted blob (`.secapp` extension)
+5. Stores the wrapped key and metadata in the database
+6. Logs the operation in the access log
+
+**Known limitation**: there is a brief race window where plaintext exists on disk before encryption completes. This will be addressed in v2 with FUSE.

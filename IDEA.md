@@ -44,3 +44,10 @@ Command-line tool for setup, teardown, restart, and scripting. Already partially
 ### 5. System Tray (`secapp-tray`)
 System tray icon for GNOME/KDE. Shows daemon status (locked/unlocked/syncing) and provides quick actions (lock, unlock, open GUI). Built with libappindicator via gtk-rs.
 
+---
+
+# new thought ideas
+
+i would like to see this package only configured to be used on nixos and systems that opt in at this time. We want to configure a nix flake that can be added to a nixos configuration in order for it to replace the gnome-keyring and activate itself with the proper permissions on nixos.
+
+
