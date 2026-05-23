@@ -193,7 +193,7 @@ export function getDocsSlugs(): string[] {
     slugs.push(slug);
   }
 
-  return slugs;
+  return slugs.sort();
 }
 
 export function getAllDocs(): ContentEntry[] {

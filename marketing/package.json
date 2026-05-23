@@ -12,6 +12,27 @@
     "typecheck": "tsgo --noEmit",
     "build:prod": "next build --webpack"
   },
+  "packageManager": "bun@1.3.14",
+  "engineStrict": true,
+  "engines": {
+    "bun": "1.3.14"
+  },
+  "devEngines": {
+    "os": {
+      "name": "linux",
+      "onFail": "error"
+    },
+    "packageManager": {
+      "name": "bun",
+      "version": "1.3.14",
+      "onFail": "error"
+    },
+    "runtime": {
+      "name": "bun",
+      "version": "1.3.14",
+      "onFail": "error"
+    }
+  },
   "dependencies": {
     "@esbuild/linux-x64": "^0.28.0",
     "@next/mdx": "^16.2.6",
@@ -20,7 +41,6 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "fumadocs-core": "^16.8.11",
-    "fumadocs-mdx": "^15.0.5",
     "fumadocs-ui": "^16.8.11",
     "gray-matter": "^4.0.3",
     "lightningcss-linux-x64-gnu": "1.32.0",

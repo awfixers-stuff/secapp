@@ -54,13 +54,29 @@ const mdxComponents: Components = {
       {children}
     </del>
   ),
+  code: ({ children, ...props }) => (
+    <code
+      className="rounded bg-muted px-1.5 py-0.5 text-sm font-mono"
+      {...props}
+    >
+      {children}
+    </code>
+  ),
+  pre: ({ children, ...props }) => (
+    <pre
+      className="overflow-x-auto rounded-lg border bg-muted/50 p-4 text-sm leading-6"
+      {...props}
+    >
+      {children}
+    </pre>
+  ),
   input: (props) => {
     if (props.type === "checkbox") {
       return (
         <input
           className="mr-1.5 h-4 w-4 rounded border-border align-middle"
-          disabled
           {...props}
+          disabled
         />
       );
     }
