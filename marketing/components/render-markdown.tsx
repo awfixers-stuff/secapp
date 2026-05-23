@@ -1,23 +1,42 @@
-import { Markdown } from "fumadocs-core/content/md";
+"use client";
+
 import { remarkGfm } from "fumadocs-core/mdx-plugins/remark-gfm";
+import type { TOCItemType } from "fumadocs-core/toc";
+import {
+  AnchorProvider,
+  TOCItem,
+  ScrollProvider,
+  useActiveAnchor,
+} from "fumadocs-core/toc";
+import { Markdown } from "fumadocs-core/content/md";
 import type { Components } from "hast-util-to-jsx-runtime";
 import type { Compatible } from "vfile";
+import { useRef, type ReactNode } from "react";
 
 const mdxComponents: Components = {
-  h1: ({ children, ...props }) => (
-    <h1 className="text-3xl font-bold tracking-tight mt-10 mb-4 first:mt-0" {...props}>
-      {children}
-    </h1>
-  ),
   h2: ({ children, ...props }) => (
-    <h2 className="text-2xl font-semibold tracking-tight mt-8 mb-3" {...props}>
+    <h2
+      className="text-2xl font-semibold tracking-tight mt-8 mb-3 scroll-mt-16"
+      {...props}
+    >
       {children}
     </h2>
   ),
   h3: ({ children, ...props }) => (
-    <h3 className="text-xl font-semibold tracking-tight mt-6 mb-2" {...props}>
+    <h3
+      className="text-xl font-semibold tracking-tight mt-6 mb-2 scroll-mt-16"
+      {...props}
+    >
       {children}
     </h3>
+  ),
+  h4: ({ children, ...props }) => (
+    <h4
+      className="text-lg font-semibold tracking-tight mt-4 mb-2 scroll-mt-16"
+      {...props}
+    >
+      {children}
+    </h4>
   ),
   p: ({ children, ...props }) => (
     <p className="leading-7 mb-4" {...props}>
@@ -116,7 +135,6 @@ const mdxComponents: Components = {
     </del>
   ),
   input: (props) => {
-    // Checkbox support for GFM task lists
     if (props.type === "checkbox") {
       return (
         <input
@@ -131,15 +149,59 @@ const mdxComponents: Components = {
 };
 
 /**
- * Render markdown content with GFM support and consistent styling.
- *
- * Use this instead of the raw `Markdown` component to ensure
- * tables, strikethrough, task lists, and other GFM features render correctly.
+ * Render markdown content with GFM support, heading IDs for TOC linking,
+ * and consistent typography styling.
  */
 export function RenderMarkdown({ content }: { content: string }) {
   return (
     <Markdown remarkPlugins={[remarkGfm]} components={mdxComponents}>
-      {content}
+      {content as Compatible}
     </Markdown>
+  );
+}
+
+/**
+ * Right-side TOC sidebar that highlights the active heading.
+ * Uses fumadocs-core's AnchorProvider for scroll tracking.
+ */
+export function TocSidebar({ toc }: { toc: TOCItemType[] }) {
+  if (!toc || toc.length === 0) return null;
+
+  return (
+    <AnchorProvider toc={toc}>
+      <TocContent toc={toc} />
+    </AnchorProvider>
+  );
+}
+
+function TocContent({ toc }: { toc: TOCItemType[] }) {
+  const activeId = useActiveAnchor();
+
+  return (
+    <nav className="text-sm">
+      <h4 className="font-semibold mb-3">On This Page</h4>
+      <ul className="space-y-1 border-l">
+        {toc.map((item) => {
+          const isActive = `#${activeId}` === item.url;
+          return (
+            <li
+              key={item.url}
+              style={{ paddingLeft: `${(item.depth - 2) * 12}px` }}
+            >
+              <a
+                href={item.url}
+                className={`block py-0.5 pl-3 transition-colors border-l-2 -ml-px ${
+                  isActive
+                    ? "border-primary text-primary font-medium"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {(item.title as ReactNode)}
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
   );
 }

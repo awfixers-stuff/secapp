@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
+import type { TOCItemType } from "fumadocs-core/toc";
 
 export interface ContentEntry {
   slug: string;
@@ -8,6 +9,7 @@ export interface ContentEntry {
   description?: string;
   content: string;
   data: Record<string, unknown>;
+  toc: TOCItemType[];
 }
 
 const DOCS_DIR = path.join(process.cwd(), "docs");
@@ -22,6 +24,47 @@ function stripLeadingH1(content: string): string {
   return content.replace(/^#\s+.+\n*/m, "");
 }
 
+/**
+ * Extract a table of contents from markdown content.
+ * Parses ATX-style headings (## and ###) and generates
+ * URL-friendly slugs for anchor linking.
+ */
+function extractToc(content: string): TOCItemType[] {
+  const headings: TOCItemType[] = [];
+  const seenSlugs = new Map<string, number>();
+
+  for (const line of content.split("\n")) {
+    const match = line.match(/^(#{2,4})\s+(.+)/);
+    if (!match) continue;
+
+    const level = match[1].length;
+    const title = match[2].replace(/[*_`~]/g, "").trim();
+    const slug = slugifyHeading(title, seenSlugs);
+
+    headings.push({
+      title,
+      url: `#${slug}`,
+      depth: level,
+    });
+  }
+
+  return headings;
+}
+
+function slugifyHeading(title: string, seenSlugs: Map<string, number>): string {
+  const base = title
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+
+  const count = seenSlugs.get(base) ?? 0;
+  seenSlugs.set(base, count + 1);
+
+  return count > 0 ? `${base}-${count}` : base;
+}
+
 function readMarkdownFile(filePath: string): ContentEntry {
   const raw = fs.readFileSync(filePath, "utf-8");
   const { data, content } = matter(raw);
@@ -34,13 +77,15 @@ function readMarkdownFile(filePath: string): ContentEntry {
   }
 
   const title = (normalized.title as string) || path.basename(filePath, path.extname(filePath));
+  const strippedContent = stripLeadingH1(content);
 
   return {
     slug: path.basename(filePath, path.extname(filePath)),
     title,
     description: normalized.description as string | undefined,
-    content: stripLeadingH1(content),
+    content: strippedContent,
     data: normalized,
+    toc: extractToc(strippedContent),
   };
 }
 

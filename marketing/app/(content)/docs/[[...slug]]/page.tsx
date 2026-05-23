@@ -1,7 +1,7 @@
 import { RenderMarkdown } from "@/components/render-markdown";
 import { getDocsContent, getDocsSlugs } from "@/lib/content";
 import { notFound } from "next/navigation";
-import { ContentPage } from "@/components/content-page";
+import { DocsPage as FumadocsDocsPage, DocsBody, DocsTitle, DocsDescription } from "fumadocs-ui/layouts/docs/page";
 
 export default async function DocsPage({
   params,
@@ -18,13 +18,13 @@ export default async function DocsPage({
   }
 
   return (
-    <ContentPage
-      title={entry.title}
-      description={entry.description}
-      lastUpdated={entry.data.lastUpdated as string | undefined}
-    >
-      <RenderMarkdown content={entry.content} />
-    </ContentPage>
+    <FumadocsDocsPage toc={entry.toc}>
+      <DocsTitle>{entry.title}</DocsTitle>
+      {entry.description && <DocsDescription>{entry.description}</DocsDescription>}
+      <DocsBody>
+        <RenderMarkdown content={entry.content} />
+      </DocsBody>
+    </FumadocsDocsPage>
   );
 }
 
