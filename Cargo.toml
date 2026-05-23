@@ -18,7 +18,7 @@ libsql = "0.9"
 aes-gcm = "0.10"
 argon2 = "0.5"
 rand = "0.8"
-sha2 = "0.10"
+sha2 = "0.11"
 hkdf = "0.13"
 
 # File monitoring
