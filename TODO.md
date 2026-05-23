@@ -10,9 +10,8 @@ secapp is composed of 5 components. The v1 MVP in this repo implements the daemo
 | GUI | `secapp-gui` | Planned (v2+) | gtk-rs native app, dual auth (account + sudo) |
 | TUI | `secapp-tui` (in `src/tui/`) | v1 MVP | ratatui terminal interface |
 | CLI | `secapp` (in `src/main.rs`) | v1 MVP | clap subcommands for setup/teardown/restart |
-| System Tray | `secapp-tray` | Planned (v2+) | libappindicator for GNOME/KDE, extensible via GJS |
+| System Tray | `secapp-tray` | Planned (v2+) | libappindicator via gtk-rs (pure Rust) |
 
-**Open decision**: The original idea notes consider rewriting the TUI in Go. Current implementation is Rust/ratatui. This needs resolution before any rewrite.
 
 ---
 
@@ -103,7 +102,6 @@ secapp is composed of 5 components. The v1 MVP in this repo implements the daemo
 - **Kernel keyring**: currently stores master key in session keyring (`keyutils`). Is this sufficient, or should we offer TPM/YubiKey integration?
 - **Multi-user**: current design is single-user per home directory. Should we support system-wide protection with per-user keys?
 - **The `.secapp` config directory**: currently at `~/.secapp/`. Should this be `/etc/secapp/` for system daemon mode?
-- **TUI language**: current implementation is Rust/ratatui. The original idea proposes Go. A rewrite would change the dependency profile and build toolchain. Needs resolution.
 - **System daemon vs per-user daemon**: the component architecture frames the daemon as a system-level service (replacing gnome-keyring). This conflicts with the current per-user design. Need to decide: run as root with multi-user support, or per-user daemon with user-level permissions?
 
 ---

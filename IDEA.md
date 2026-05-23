@@ -15,6 +15,7 @@ The database uses Turso (libsql) locally, with encrypted blob remote syncing pla
 - **File scheme**: Encrypted blob replaces original. The daemon serves plaintext to authorized processes on access. No dual file.
 - **Recovery key**: Planned for v3, not v1. Lost password = lost data for now.
 - **Cloud sync**: E2E encrypted blobs to Turso cloud. Server never sees plaintext or keys.
+- **Language**: Pure Rust across all components (daemon, TUI, CLI, GUI, system tray). No Go, no Python, no shell scripting for core logic. Rust ecosystem only (ratatui, gtk-rs, libappindicator-rs, clap, tokio, libsql, etc.).
 
 ## Design Decisions (open)
 
@@ -35,11 +36,11 @@ The core privileged process. Replaces desktop keystore tools like gnome-keyring 
 Native desktop application built with gtk-rs. Authentication requires both the secapp account password and sudo password (account on first run, sudo periodically). Provides a visual surface for key management, policy configuration, encryption status, and audit log review.
 
 ### 3. TUI (`secapp-tui`)
-Terminal interface for managing daemon settings. Semi-graphical (ratatui-style) interface for environments where a GUI isn't available or desired. **Open decision**: current implementation is Rust/ratatui; the new idea proposes Go. This needs resolution before any rewrite.
+Terminal interface for managing daemon settings. Semi-graphical (ratatui-style) interface for environments where a GUI isn't available or desired. Implemented in Rust.
 
 ### 4. CLI (`secapp-cli`)
 Command-line tool for setup, teardown, restart, and scripting. Already partially implemented via clap subcommands. Will grow as the daemon gains features (sync, recovery, policy management).
 
 ### 5. System Tray (`secapp-tray`)
-System tray icon for GNOME/KDE. Shows daemon status (locked/unlocked/syncing) and provides quick actions (lock, unlock, open GUI). Initial target: libappindicator via gtk-rs. Extensible — could use GJS for richer tray UI in custom environments.
+System tray icon for GNOME/KDE. Shows daemon status (locked/unlocked/syncing) and provides quick actions (lock, unlock, open GUI). Built with libappindicator via gtk-rs.
 
