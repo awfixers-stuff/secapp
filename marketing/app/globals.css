@@ -1,6 +1,40 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "fumadocs-ui/style.css";
+/**
+ * Map shadcn theme variables to fumadocs-ui color variables.
+ * fumadocs-ui components use --color-fd-* internally;
+ * we point them at our shadcn equivalents so the docs
+ * sidebar, TOC, and layout pick up our theme.
+ */
+:root {
+  --color-fd-background: var(--background);
+  --color-fd-foreground: var(--foreground);
+  --color-fd-card: var(--card);
+  --color-fd-card-foreground: var(--card-foreground);
+  --color-fd-popover: var(--popover);
+  --color-fd-popover-foreground: var(--popover-foreground);
+  --color-fd-primary: var(--primary);
+  --color-fd-primary-foreground: var(--primary-foreground);
+  --color-fd-secondary: var(--secondary);
+  --color-fd-secondary-foreground: var(--secondary-foreground);
+  --color-fd-muted: var(--muted);
+  --color-fd-muted-foreground: var(--muted-foreground);
+  --color-fd-accent: var(--accent);
+  --color-fd-accent-foreground: var(--accent-foreground);
+  --color-fd-border: var(--border);
+  --color-fd-ring: var(--ring);
+  --color-fd-overlay: oklch(0 0 0 / 0.2);
+  --color-fd-success: oklch(0.72 0.22 150);
+  --color-fd-warning: oklch(0.77 0.19 70);
+  --color-fd-error: var(--destructive);
+  --color-fd-info: oklch(0.62 0.21 260);
+  --color-fd-idea: oklch(0.71 0.21 61);
+  --color-fd-diff-remove: oklch(0.65 0.25 350 / 0.12);
+  --color-fd-diff-remove-symbol: oklch(0.65 0.25 350);
+  --color-fd-diff-add: oklch(0.72 0.22 150 / 0.1);
+  --color-fd-diff-add-symbol: oklch(0.72 0.22 150);
+}
 @import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));

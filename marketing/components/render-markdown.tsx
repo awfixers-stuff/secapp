@@ -4,97 +4,27 @@ import { remarkGfm } from "fumadocs-core/mdx-plugins/remark-gfm";
 import type { TOCItemType } from "fumadocs-core/toc";
 import {
   AnchorProvider,
-  TOCItem,
-  ScrollProvider,
   useActiveAnchor,
 } from "fumadocs-core/toc";
 import { Markdown } from "fumadocs-core/content/md";
 import type { Components } from "hast-util-to-jsx-runtime";
 import type { Compatible } from "vfile";
-import { useRef, type ReactNode } from "react";
+import type { ReactNode } from "react";
+import rehypeSlug from "rehype-slug";
 
+/**
+ * Minimal MDX component overrides.
+ *
+ * fumadocs-ui's DocsBody already handles typography (headings, paragraphs,
+ * lists, code, etc.). We only override what needs custom treatment:
+ * - tables need border styling
+ * - checkboxes need proper styling for GFM task lists
+ * - del needs strikethrough
+ */
 const mdxComponents: Components = {
-  h2: ({ children, ...props }) => (
-    <h2
-      className="text-2xl font-semibold tracking-tight mt-8 mb-3 scroll-mt-16"
-      {...props}
-    >
-      {children}
-    </h2>
-  ),
-  h3: ({ children, ...props }) => (
-    <h3
-      className="text-xl font-semibold tracking-tight mt-6 mb-2 scroll-mt-16"
-      {...props}
-    >
-      {children}
-    </h3>
-  ),
-  h4: ({ children, ...props }) => (
-    <h4
-      className="text-lg font-semibold tracking-tight mt-4 mb-2 scroll-mt-16"
-      {...props}
-    >
-      {children}
-    </h4>
-  ),
-  p: ({ children, ...props }) => (
-    <p className="leading-7 mb-4" {...props}>
-      {children}
-    </p>
-  ),
-  ul: ({ children, ...props }) => (
-    <ul className="list-disc pl-6 mb-4 leading-7" {...props}>
-      {children}
-    </ul>
-  ),
-  ol: ({ children, ...props }) => (
-    <ol className="list-decimal pl-6 mb-4 leading-7" {...props}>
-      {children}
-    </ol>
-  ),
-  li: ({ children, ...props }) => (
-    <li className="mb-1" {...props}>
-      {children}
-    </li>
-  ),
-  a: ({ children, href, ...props }) => (
-    <a
-      href={href}
-      className="text-primary underline underline-offset-4 hover:text-primary/80"
-      {...props}
-    >
-      {children}
-    </a>
-  ),
-  code: ({ children, ...props }) => (
-    <code
-      className="bg-muted rounded px-1.5 py-0.5 font-mono text-sm"
-      {...props}
-    >
-      {children}
-    </code>
-  ),
-  pre: ({ children, ...props }) => (
-    <pre
-      className="bg-muted rounded-lg p-4 overflow-x-auto mb-4 text-sm leading-6"
-      {...props}
-    >
-      {children}
-    </pre>
-  ),
-  blockquote: ({ children, ...props }) => (
-    <blockquote
-      className="border-l-4 border-muted-foreground/30 pl-4 italic text-muted-foreground mb-4"
-      {...props}
-    >
-      {children}
-    </blockquote>
-  ),
-  hr: (props) => <hr className="my-8 border-border" {...props} />,
   table: ({ children, ...props }) => (
     <div className="overflow-x-auto mb-4">
-      <table className="w-full border-collapse" {...props}>
+      <table className="w-full border-collapse border border-border" {...props}>
         {children}
       </table>
     </div>
@@ -119,16 +49,6 @@ const mdxComponents: Components = {
       {children}
     </tr>
   ),
-  strong: ({ children, ...props }) => (
-    <strong className="font-semibold" {...props}>
-      {children}
-    </strong>
-  ),
-  em: ({ children, ...props }) => (
-    <em className="italic" {...props}>
-      {children}
-    </em>
-  ),
   del: ({ children, ...props }) => (
     <del className="line-through" {...props}>
       {children}
@@ -138,7 +58,7 @@ const mdxComponents: Components = {
     if (props.type === "checkbox") {
       return (
         <input
-          className="mr-1.5 h-4 w-4 rounded border-border"
+          className="mr-1.5 h-4 w-4 rounded border-border align-middle"
           disabled
           {...props}
         />
@@ -149,12 +69,18 @@ const mdxComponents: Components = {
 };
 
 /**
- * Render markdown content with GFM support, heading IDs for TOC linking,
- * and consistent typography styling.
+ * Render markdown content with GFM support, heading IDs for TOC linking.
+ *
+ * Typography is handled by fumadocs-ui's DocsBody — we only override
+ * tables, checkboxes, and strikethrough here.
  */
 export function RenderMarkdown({ content }: { content: string }) {
   return (
-    <Markdown remarkPlugins={[remarkGfm]} components={mdxComponents}>
+    <Markdown
+      remarkPlugins={[remarkGfm]}
+      rehypePlugins={[rehypeSlug]}
+      components={mdxComponents}
+    >
       {content as Compatible}
     </Markdown>
   );
