@@ -65,7 +65,7 @@
     "@types/react-dom": "^19.2.3",
     "@typescript/native-preview": "^7.0.0-dev.20260521.1",
     "@typescript/native-preview-linux-x64": "^7.0.0-dev.20260516.1",
-    "oxfmt": "^0.50.0",
+    "oxfmt": "^0.52.0",
     "oxlint": "^1.65.0",
     "postcss": "^8.5.15",
     "tailwindcss": "^4.3.0",
